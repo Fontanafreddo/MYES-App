@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<!-- PWA / Add to Home Screen -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="MYES">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#0F1923">
+<meta name="msapplication-navbutton-color" content="#0F1923">
+
+<!-- Generated App Icon (inline SVG as data URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230F1923'/%3E%3Ccircle cx='90' cy='85' r='60' fill='%234FC3F7' opacity='.7'/%3E%3Ccircle cx='90' cy='85' r='44' fill='%23F28B82' opacity='.7'/%3E%3Ccircle cx='90' cy='85' r='26' fill='%23FFD63A' opacity='.8'/%3E%3Ccircle cx='90' cy='85' r='12' fill='white' opacity='.85'/%3E%3Ctext x='90' y='89' text-anchor='middle' fill='%230F1923' font-size='10' font-weight='800' font-family='system-ui'%3EMYES%3C/text%3E%3Ctext x='90' y='155' text-anchor='middle' fill='%23FFD63A' font-size='11' font-weight='700' font-family='system-ui'%3ESystementwicklung%3C/text%3E%3C/svg%3E">
+
+<!-- Splash screens for iPhone -->
+<meta name="apple-mobile-web-app-title" content="MYES System">
+
+<title>MYES × Systementwicklung</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--m:#FFD63A;--t:#F28B82;--o:#4FC3F7;--bg:#0F1923;--card:#172635;--card2:#1E3347;--text:#E8EDF2;--muted:#8BA3B8;--accent:#FFD63A;--border:#2A4055;--purple:#A78BFA;--pink:#F472B6;--green:#34D399;
+--sat:env(safe-area-inset-top);--sab:env(safe-area-inset-bottom);--sal:env(safe-area-inset-left);--sar:env(safe-area-inset-right)}
+
+html{height:100%;overflow:hidden}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);height:100%;overflow:hidden;
+  -webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+}
+
+/* Safe areas for notch/dynamic island */
+.app-header{
+  padding:calc(12px + var(--sat)) 14px 10px;
+  text-align:center;background:linear-gradient(180deg,#0A1219,var(--bg));
+  flex-shrink:0;position:relative;z-index:10;
+}
+.app-header .ey{font-size:8px;letter-spacing:3px;color:var(--muted);text-transform:uppercase;opacity:0;animation:fadeUp .6s .2s forwards}
+.app-header h1{font-size:24px;font-weight:800;margin:3px 0;background:linear-gradient(135deg,var(--m),var(--t),var(--o));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;opacity:0;animation:fadeUp .6s .3s forwards}
+.app-header .sub{font-size:10px;color:var(--muted);opacity:0;animation:fadeUp .6s .4s forwards}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* Tab bar - iOS style bottom nav */
+.tab-bar{
+  display:flex;gap:0;justify-content:space-around;
+  padding:6px 8px calc(6px + var(--sab));
+  background:linear-gradient(180deg,transparent,rgba(10,18,25,.95) 20%);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-top:1px solid rgba(255,255,255,.06);
+  flex-shrink:0;position:relative;z-index:10;
+}
+.tab-bar button{
+  background:none;border:none;color:var(--muted);
+  font-size:9px;font-weight:500;cursor:pointer;
+  font-family:inherit;padding:6px 4px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  transition:all .25s;flex:1;
+}
+.tab-bar button .tab-icon{font-size:18px;line-height:1;transition:transform .25s}
+.tab-bar button.on{color:var(--accent)}
+.tab-bar button.on .tab-icon{transform:scale(1.15)}
+
+/* Scrollable content area */
+.content{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:0 14px 16px;
+  -webkit-overflow-scrolling:touch;
+  scroll-behavior:smooth;
+}
+
+/* Views */
+.view{display:none;animation:fadeIn .35s ease}
+.view.on{display:block}
+
+.stitle{font-size:10px;font-weight:700;letter-spacing:3px;color:var(--accent);text-align:center;text-transform:uppercase;margin-bottom:4px;padding-top:4px}
+.ssub{font-size:11px;color:var(--muted);text-align:center;margin-bottom:16px}
+
+/* Cards */
+.card{
+  background:var(--card);border:1.5px solid var(--border);
+  border-radius:16px;padding:14px 16px;margin-bottom:8px;
+  transition:all .3s;cursor:pointer;
+}
+.card.act{background:var(--card2);transform:scale(1.01)}
+.card .detail{max-height:0;overflow:hidden;transition:max-height .4s ease,opacity .3s;opacity:0}
+.card.act .detail{max-height:500px;opacity:1}
+
+.tag{display:inline-block;font-size:9px;padding:3px 8px;border-radius:12px;margin:2px;font-weight:600}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex-shrink:0}
+.row{display:flex;align-items:center;gap:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* SVG */
+.svg-l{width:100%;max-width:420px;display:block;margin:0 auto 16px}
+
+/* Timeline */
+.tl-bar{height:3px;border-radius:2px;background:linear-gradient(90deg,var(--m),var(--t),var(--o));margin:0 24px}
+.tl-dots{display:flex;justify-content:space-between;margin:-10px 14px 0}
+.tl-dot{text-align:center;flex:1}
+.tl-dot:nth-child(2){flex:2}
+.tl-num{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;margin:0 auto}
+.tl-label{font-size:10px;font-weight:700;margin-top:5px}
+.tl-dur{font-size:9px;color:var(--muted)}
+
+/* Phase cards */
+.phase-card{background:var(--card);border-radius:16px;overflow:hidden;margin-bottom:10px}
+.phase-card .accent{height:3px}
+.phase-card .inner{padding:14px 16px}
+.phase-card .boxes{display:flex;gap:8px;flex-wrap:wrap}
+.phase-card .box{flex:1;min-width:140px;padding:10px;border-radius:10px}
+
+.kern{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:18px;text-align:center;margin-top:14px}
+.kern .quote{font-size:16px;font-weight:800;margin-top:6px;background:linear-gradient(135deg,var(--m),var(--t),var(--o));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+
+.footer{text-align:center;padding:20px 0 8px;font-size:8px;color:var(--muted);opacity:.35}
+
+/* Install banner */
+.install-hint{
+  display:none;background:var(--card2);border:1px solid var(--accent)40;
+  border-radius:14px;padding:14px 16px;margin-bottom:14px;
+  text-align:center;animation:fadeUp .5s .8s forwards;opacity:0;
+}
+.install-hint .close{position:absolute;top:8px;right:12px;background:none;border:none;color:var(--muted);font-size:16px;cursor:pointer}
+.install-hint h3{font-size:12px;color:var(--accent);margin-bottom:4px}
+.install-hint p{font-size:10px;color:var(--muted);line-height:1.5}
+
+@media(max-width:380px){.grid2{grid-template-columns:1fr}.app-header h1{font-size:20px}}
+@media(min-width:768px){.content{max-width:540px;margin:0 auto}}
+</style>
+</head>
+<body>
+
+<!-- APP HEADER -->
+<div class="app-header">
+  <div class="ey">Mandatsangebot × MYES</div>
+  <h1>Systementwicklung</h1>
+  <div class="sub">Befähigung auf drei Systemebenen · Marcel Kaltenbrunner</div>
+</div>
+
+<!-- SCROLLABLE CONTENT -->
+<div class="content">
+
+  <!-- Install hint (shown on mobile Safari when not yet installed) -->
+  <div class="install-hint" id="installHint" style="position:relative">
+    <button class="close" onclick="this.parentElement.style.display='none'">×</button>
+    <h3>📱 Als App installieren</h3>
+    <p>Tippe auf <strong>Teilen</strong> (□↑) → <strong>«Zum Home-Bildschirm»</strong><br>Dann öffnet sich diese Seite wie eine App!</p>
+  </div>
+
+  <!-- ===== ÜBERSICHT ===== -->
+  <div class="view on" id="v-overview">
+    <div class="stitle">Gesamtarchitektur</div>
+    <div class="ssub">Alle Elemente auf einen Blick</div>
+    <svg viewBox="0 0 300 300" style="width:240px;max-width:90%;display:block;margin:0 auto">
+      <defs><radialGradient id="cg" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff" stop-opacity=".9"/><stop offset="100%" stop-color="#FFD63A" stop-opacity=".7"/></radialGradient></defs>
+      <circle cx="150" cy="150" r="135" fill="#4FC3F7" opacity=".78" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>
+      <circle cx="150" cy="150" r="98" fill="#F28B82" opacity=".78" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>
+      <circle cx="150" cy="150" r="56" fill="#FFD63A" opacity=".78" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>
+      <text x="150" y="30" text-anchor="middle" fill="rgba(255,255,255,.75)" font-size="8.5" font-weight="700" letter-spacing="1.5">ORGANISATION</text>
+      <text x="150" y="40" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="6.5" font-style="italic">Top Why</text>
+      <text x="150" y="68" text-anchor="middle" fill="rgba(255,255,255,.75)" font-size="8" font-weight="700" letter-spacing="1.5">TEAM</text>
+      <text x="150" y="78" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="6.5" font-style="italic">Collective Why</text>
+      <text x="150" y="110" text-anchor="middle" fill="rgba(255,255,255,.75)" font-size="7.5" font-weight="700" letter-spacing="1.5">MENSCH</text>
+      <text x="150" y="120" text-anchor="middle" fill="rgba(255,255,255,.45)" font-size="6.5" font-style="italic">Personal Why</text>
+      <circle cx="150" cy="150" r="22" fill="url(#cg)"/>
+      <text x="150" y="148" text-anchor="middle" fill="#0F1923" font-size="10" font-weight="800">MYES</text>
+      <text x="150" y="158" text-anchor="middle" fill="#0F1923" font-size="5" font-weight="500" opacity=".6">Erkennen · Beobachten · Ent-wickeln</text>
+    </svg>
+    <div class="grid2" style="margin-top:14px">
+      <div style="padding:12px;border-radius:12px;border:1px solid rgba(255,214,58,.2);background:rgba(255,214,58,.04)">
+        <div style="font-size:10px;font-weight:700;color:var(--accent);margin-bottom:5px">3 Systemebenen</div>
+        <div style="font-size:9.5px;color:var(--muted);line-height:1.5">→ Mensch → Personal Why<br>→ Team → Collective Why<br>→ Organisation → Top Why</div>
+      </div>
+      <div style="padding:12px;border-radius:12px;border:1px solid rgba(242,139,130,.2);background:rgba(242,139,130,.04)">
+        <div style="font-size:10px;font-weight:700;color:var(--t);margin-bottom:5px">6 Entwicklungsfelder</div>
+        <div style="font-size:9.5px;color:var(--muted);line-height:1.5">→ Awareness · Purpose<br>→ Growth · Values · Change<br>→ Sustainability</div>
+      </div>
+      <div style="padding:12px;border-radius:12px;border:1px solid rgba(79,195,247,.2);background:rgba(79,195,247,.04)">
+        <div style="font-size:10px;font-weight:700;color:var(--o);margin-bottom:5px">3 Leistungsbereiche</div>
+        <div style="font-size:9.5px;color:var(--muted);line-height:1.5">→ Systemdiagnose<br>→ People &amp; Culture<br>→ Strukturentwicklung</div>
+      </div>
+      <div style="padding:12px;border-radius:12px;border:1px solid rgba(167,139,250,.2);background:rgba(167,139,250,.04)">
+        <div style="font-size:10px;font-weight:700;color:var(--purple);margin-bottom:5px">3 Phasen</div>
+        <div style="font-size:9.5px;color:var(--muted);line-height:1.5">→ Erkennen (M 1–3)<br>→ Beobachten (M 4–12)<br>→ Ent-wickeln (M 12–24)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SYSTEMEBENEN ===== -->
+  <div class="view" id="v-ebenen">
+    <div class="stitle">Drei Systemebenen</div>
+    <div class="ssub">Tippe auf eine Ebene für Details</div>
+    <svg viewBox="0 0 300 300" style="width:200px;max-width:80%;display:block;margin:0 auto 14px">
+      <defs><radialGradient id="cg2" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="#fff" stop-opacity=".9"/><stop offset="100%" stop-color="#FFD63A" stop-opacity=".7"/></radialGradient></defs>
+      <circle cx="150" cy="150" r="135" fill="#4FC3F7" opacity=".78" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>
+      <circle cx="150" cy="150" r="98" fill="#F28B82" opacity=".78" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>
+      <circle cx="150" cy="150" r="56" fill="#FFD63A" opacity=".78" stroke="rgba(255,255,255,.15)" stroke-width=".8"/>
+      <text x="150" y="30" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="8" font-weight="700" letter-spacing="1.5">ORGANISATION</text>
+      <text x="150" y="68" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="7.5" font-weight="700" letter-spacing="1.5">TEAM</text>
+      <text x="150" y="110" text-anchor="middle" fill="rgba(255,255,255,.7)" font-size="7" font-weight="700" letter-spacing="1.5">MENSCH</text>
+      <circle cx="150" cy="150" r="22" fill="url(#cg2)"/>
+      <text x="150" y="148" text-anchor="middle" fill="#0F1923" font-size="10" font-weight="800">MYES</text>
+      <text x="150" y="158" text-anchor="middle" fill="#0F1923" font-size="5" opacity=".6">Erkennen · Beobachten · Ent-wickeln</text>
+    </svg>
+    <div id="levels"></div>
+    <div class="card" style="text-align:center;cursor:default;margin-top:4px;border-color:rgba(255,214,58,.15)">
+      <div style="font-size:9px;font-weight:700;color:var(--accent);letter-spacing:2px">ZENTRALER PROZESS</div>
+      <div style="font-size:13px;color:var(--text);margin-top:4px">Erkennen → Beobachten → Ent-wickeln</div>
+      <div style="font-size:9px;color:var(--muted);font-style:italic;margin-top:4px">Achtsam, iterativ — aus dem System heraus ermöglicht</div>
+    </div>
+  </div>
+
+  <!-- ===== FELDER ===== -->
+  <div class="view" id="v-felder">
+    <div class="stitle">Sechs Entwicklungsfelder</div>
+    <div class="ssub">Tippe auf ein Feld für MYES-Zuordnung</div>
+    <div class="grid2" id="fields"></div>
+    <div class="card" style="cursor:default;margin-top:4px">
+      <div style="font-size:9px;font-weight:700;color:var(--muted);letter-spacing:1px;margin-bottom:8px">ZUORDNUNG ZU SYSTEMEBENEN</div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:5px 8px;border-radius:8px;background:rgba(255,214,58,.04)">
+        <span class="dot" style="background:var(--m)"></span>
+        <span style="font-size:10px;font-weight:700;color:var(--m);min-width:78px">MENSCH</span>
+        <span style="font-size:9.5px;color:var(--muted)">Awareness · Purpose</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:5px 8px;border-radius:8px;background:rgba(242,139,130,.04)">
+        <span class="dot" style="background:var(--t)"></span>
+        <span style="font-size:10px;font-weight:700;color:var(--t);min-width:78px">TEAM</span>
+        <span style="font-size:9.5px;color:var(--muted)">Growth · Values · Change</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:8px;background:rgba(79,195,247,.04)">
+        <span class="dot" style="background:var(--o)"></span>
+        <span style="font-size:10px;font-weight:700;color:var(--o);min-width:78px">ORGANISATION</span>
+        <span style="font-size:9.5px;color:var(--muted)">Sustainability</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LEISTUNGEN ===== -->
+  <div class="view" id="v-leistungen">
+    <div class="stitle">Drei Leistungsbereiche × MYES</div>
+    <div class="ssub">Tippe für Ebenen- und Felderzuordnung</div>
+    <svg viewBox="0 0 320 160" class="svg-l">
+      <rect x="65" y="10" width="245" height="35" rx="5" fill="#FFD63A" opacity=".1" stroke="#FFD63A" stroke-width=".5" stroke-opacity=".3"/>
+      <text x="60" y="32" text-anchor="end" fill="#FFD63A" font-size="8" font-weight="700">MENSCH</text>
+      <rect x="65" y="55" width="245" height="35" rx="5" fill="#F28B82" opacity=".1" stroke="#F28B82" stroke-width=".5" stroke-opacity=".3"/>
+      <text x="60" y="77" text-anchor="end" fill="#F28B82" font-size="8" font-weight="700">TEAM</text>
+      <rect x="65" y="100" width="245" height="35" rx="5" fill="#4FC3F7" opacity=".1" stroke="#4FC3F7" stroke-width=".5" stroke-opacity=".3"/>
+      <text x="60" y="122" text-anchor="end" fill="#4FC3F7" font-size="8" font-weight="700">ORGANISATION</text>
+      <rect x="75" y="12" width="72" height="120" rx="6" fill="#A78BFA" opacity=".15" stroke="#A78BFA" stroke-width="1"/>
+      <text x="111" y="72" text-anchor="middle" fill="#A78BFA" font-size="7" font-weight="700">Systemdiagnose</text>
+      <rect x="160" y="12" width="72" height="75" rx="6" fill="#F472B6" opacity=".15" stroke="#F472B6" stroke-width="1"/>
+      <text x="196" y="47" text-anchor="middle" fill="#F472B6" font-size="7" font-weight="700">People &amp;</text>
+      <text x="196" y="57" text-anchor="middle" fill="#F472B6" font-size="7" font-weight="700">Culture</text>
+      <rect x="245" y="57" width="58" height="78" rx="6" fill="#34D399" opacity=".15" stroke="#34D399" stroke-width="1"/>
+      <text x="274" y="93" text-anchor="middle" fill="#34D399" font-size="6.5" font-weight="700">Struktur-</text>
+      <text x="274" y="103" text-anchor="middle" fill="#34D399" font-size="6.5" font-weight="700">entwicklung</text>
+    </svg>
+    <div id="leistungen"></div>
+  </div>
+
+  <!-- ===== PHASEN ===== -->
+  <div class="view" id="v-phasen">
+    <div class="stitle">Phasenmodell</div>
+    <div class="ssub">Erkennen → Beobachten → Ent-wickeln</div>
+    <div style="margin-bottom:28px;padding:0 8px">
+      <div class="tl-bar"></div>
+      <div class="tl-dots">
+        <div class="tl-dot"><div class="tl-num" style="background:var(--m);color:var(--bg);box-shadow:0 0 10px rgba(255,214,58,.4)">1</div><div class="tl-label" style="color:var(--m)">ERKENNEN</div><div class="tl-dur">Monate 1–3</div></div>
+        <div class="tl-dot"><div class="tl-num" style="background:var(--t);color:var(--bg);box-shadow:0 0 10px rgba(242,139,130,.4)">2</div><div class="tl-label" style="color:var(--t)">BEOBACHTEN</div><div class="tl-dur">Monate 4–12/15</div></div>
+        <div class="tl-dot"><div class="tl-num" style="background:var(--o);color:var(--bg);box-shadow:0 0 10px rgba(79,195,247,.4)">3</div><div class="tl-label" style="color:var(--o)">ENT-WICKELN</div><div class="tl-dur">Monate 12/15–24</div></div>
+      </div>
+    </div>
+    <div id="phasen"></div>
+    <div class="kern">
+      <div style="font-size:9px;font-weight:700;color:var(--accent);letter-spacing:2px">VERBINDUNG ZUM MYES-KERN</div>
+      <div class="quote">«achtsam Erkennen, Beobachten, Ent-wickeln»</div>
+      <div style="font-size:10px;color:var(--muted);margin-top:6px">Dieser iterative Prozess wirkt auf allen drei Systemebenen gleichzeitig.</div>
+    </div>
+  </div>
+
+  <div class="footer">MYES × Mandatsangebot · Marcel Kaltenbrunner · murmuway</div>
+</div>
+
+<!-- BOTTOM TAB BAR (iOS-style) -->
+<div class="tab-bar" id="tabBar"></div>
+
+<script>
+// === DATA ===
+var LEVELS=[
+  {k:"mensch",l:"MENSCH",s:"Personal Why",c:"#FFD63A",d:"Selbstwahrnehmung und Fremdwahrnehmung stärken. Individuelle Werte und das persönliche «Warum» klären. Potenziale erkennen, beobachten und gezielt ent-wickeln.",tags:["Self Awareness","BEFKT","Werte","Fremdwahrnehmung","Selbstwahrnehmung","Personal Why"]},
+  {k:"team",l:"TEAM",s:"Collective Why",c:"#F28B82",d:"Gemeinsame Werte und «Wofür» entwickeln. Rollen und Verantwortungen klären. Vertrauen, Mut und radikale Ehrlichkeit als Teamkultur verankern.",tags:["GROWTH","RESILIENZ","CO-CREATION","BEFÄHIGEN","Sicherheit & Orientierung","Collective Why"]},
+  {k:"org",l:"ORGANISATION",s:"Top Why",c:"#4FC3F7",d:"Identität, Vision und Zweck der Organisation schärfen. Ein intelligentes Ökosystem aufbauen, das Selbstorganisation und agile Strategieentwicklung ermöglicht.",tags:["NACHHALTIGKEIT","ENABLER","WERTSTEIGERUNG","CHANGE THINKING","Top Why","Agilität"]}
+];
+var FIELDS=[
+  {id:"aw",icon:"👁",l:"AWARENESS",s:"Werte & Wirkung",lv:"MENSCH",c:"#FFD63A",items:["Werte & Wirkung","Verantwortung","Klarheit"],myes:"Self Awareness, Fremdwahrnehmung, Werte"},
+  {id:"pu",icon:"🧭",l:"PURPOSE",s:"Antrieb & Orientierung",lv:"MENSCH",c:"#FFD63A",items:["Antrieb","Orientierung","Ziele"],myes:"Personal Why, Collective Why, Top Why"},
+  {id:"gr",icon:"🌱",l:"GROWTH",s:"Entwicklungskompetenz",lv:"TEAM",c:"#F28B82",items:["Entwicklungskompetenz","Lerngeschwindigkeit","Sicherheit"],myes:"GROWTH, Sicherheit & Orientierung"},
+  {id:"va",icon:"🤝",l:"VALUES",s:"Gemeinsames Bild",lv:"TEAM",c:"#F28B82",items:["Gemeinsames Bild","Rollen & Verantwortungen","Vertrauen"],myes:"Gemeinsame Werte, Rollen"},
+  {id:"ch",icon:"⚡",l:"CHANGE",s:"Befähigung statt Kontrolle",lv:"TEAM",c:"#F28B82",items:["Befähigung statt Kontrolle","Experimentieren","Re-Thinking"],myes:"CO-CREATION, CHANGE THINKING"},
+  {id:"su",icon:"♻️",l:"SUSTAINABILITY",s:"Nachhaltiger Mehrwert",lv:"ORG",c:"#4FC3F7",items:["Agile Strategieentwicklung","Resiliente Strukturen","Nachhaltiger Mehrwert"],myes:"NACHHALTIGKEIT, ENABLER, WERTSTEIGERUNG"}
+];
+var LEIST=[
+  {id:"d",l:"Systemdiagnose & Entwicklungsstrategie",c:"#A78BFA",d:"Change Thinking × Collective Why — Ganzheitliche System- und Kulturdiagnose",eb:[["MENSCH","#FFD63A"],["TEAM","#F28B82"],["ORG","#4FC3F7"]],fe:["🧭 Purpose","⚡ Change"]},
+  {id:"p",l:"People & Culture Development",c:"#F472B6",d:"Resilienz × Co-Creation × Enabler — Gezielte Entwicklung der Menschen und Kultur",eb:[["MENSCH","#FFD63A"],["TEAM","#F28B82"]],fe:["🌱 Growth","🤝 Values","⚡ Change","👁 Awareness"]},
+  {id:"s",l:"Strukturentwicklung & Verankerung",c:"#34D399",d:"Enabler × Wertsteigerung — Überführung in intelligentes Ökosystem",eb:[["TEAM","#F28B82"],["ORG","#4FC3F7"]],fe:["♻️ Sustainability","⚡ Change"]}
+];
+var PHASES=[
+  {n:"1",l:"ERKENNEN",s:"System verstehen",dur:"Monate 1–3",c:"#FFD63A",d:"Systemdiagnose auf allen drei Ebenen. Klärung von Personal Why, Collective Why und Top Why.",leist:"Systemdiagnose & Strategie",lc:"#A78BFA",eb:[["MENSCH","#FFD63A"],["TEAM","#F28B82"],["ORG","#4FC3F7"]],erg:"Systemlandkarte, Handlungsfelder, agile Strategie"},
+  {n:"2",l:"BEOBACHTEN",s:"Menschen & Kultur entwickeln",dur:"Monate 4–12/15",c:"#F28B82",d:"Kerninterventionen entlang der sechs Entwicklungsfelder. Resilienz, Co-Creation, Enabling.",leist:"People & Culture Development",lc:"#F472B6",eb:[["MENSCH","#FFD63A"],["TEAM","#F28B82"]],erg:"Iterative Reviews, Zwischenevaluation, Go/No-Go"},
+  {n:"3",l:"ENT-WICKELN",s:"Strukturen verankern",dur:"Monate 12/15–24",c:"#4FC3F7",d:"Überführung in intelligentes Ökosystem. Ausbildung interner Verantwortlicher.",leist:"Strukturentwicklung & Verankerung",lc:"#34D399",eb:[["TEAM","#F28B82"],["ORG","#4FC3F7"]],erg:"Abschlussevaluation, Systemempfehlungen"}
+];
+
+function tag(t,c){return'<span class="tag" style="background:'+c+'18;color:'+c+';border:1px solid '+c+'35">'+t+'</span>'}
+
+// === TAB BAR ===
+var tabs=[
+  {k:"overview",l:"Übersicht",icon:"◎"},
+  {k:"ebenen",l:"Ebenen",icon:"◉"},
+  {k:"felder",l:"Felder",icon:"⬡"},
+  {k:"leistungen",l:"Leistungen",icon:"▧"},
+  {k:"phasen",l:"Phasen",icon:"→"}
+];
+var tabBar=document.getElementById("tabBar");
+tabs.forEach(function(t,i){
+  var b=document.createElement("button");
+  b.className=i===0?"on":"";
+  b.innerHTML='<span class="tab-icon">'+t.icon+'</span>'+t.l;
+  b.onclick=function(){
+    document.querySelectorAll(".tab-bar button").forEach(function(x){x.className=""});
+    b.className="on";
+    document.querySelectorAll(".view").forEach(function(x){x.className="view"});
+    document.getElementById("v-"+t.k).className="view on";
+    document.querySelector(".content").scrollTop=0;
+  };
+  tabBar.appendChild(b);
+});
+
+// === LEVELS ===
+var levelsEl=document.getElementById("levels"),openLv=null;
+LEVELS.forEach(function(lv){
+  var d=document.createElement("div");d.className="card";
+  d.innerHTML='<div class="row"><span class="dot" style="background:'+lv.c+'"></span><span style="font-size:14px;font-weight:700;color:'+lv.c+'">'+lv.l+'</span><span style="font-size:10px;color:#8BA3B8;font-style:italic">— '+lv.s+'</span></div><div class="detail"><div style="font-size:11px;color:#8BA3B8;line-height:1.5;margin:10px 0 8px">'+lv.d+'</div><div style="font-size:9px;font-weight:600;color:'+lv.c+';opacity:.6;margin-bottom:4px">MYES-Elemente:</div><div>'+lv.tags.map(function(t){return tag(t,lv.c)}).join("")+'</div></div>';
+  d.onclick=function(){if(openLv===d){d.classList.remove("act");openLv=null}else{if(openLv)openLv.classList.remove("act");d.classList.add("act");openLv=d}};
+  levelsEl.appendChild(d);
+});
+
+// === FIELDS ===
+var fieldsEl=document.getElementById("fields"),openF=null;
+FIELDS.forEach(function(f){
+  var d=document.createElement("div");d.className="card";
+  d.innerHTML='<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:16px">'+f.icon+'</span><div><div style="font-size:10px;font-weight:700;color:'+f.c+';line-height:1.2">'+f.l+'</div><div style="font-size:9px;color:#8BA3B8">'+f.s+'</div></div></div>'+tag(f.lv,f.c)+'<div class="detail" style="margin-top:8px">'+f.items.map(function(i){return'<div style="font-size:10px;color:#8BA3B8;margin-bottom:2px">→ '+i+'</div>'}).join("")+'<div style="font-size:8.5px;color:'+f.c+';opacity:.6;font-style:italic;margin-top:6px">MYES: '+f.myes+'</div></div>';
+  d.onclick=function(){if(openF===d){d.classList.remove("act");openF=null}else{if(openF)openF.classList.remove("act");d.classList.add("act");openF=d}};
+  fieldsEl.appendChild(d);
+});
+
+// === LEISTUNGEN ===
+var leistEl=document.getElementById("leistungen"),openL=null;
+LEIST.forEach(function(it){
+  var d=document.createElement("div");d.className="card";d.style.borderLeft="3px solid "+it.c;
+  d.innerHTML='<div style="font-size:12px;font-weight:700;color:'+it.c+';margin-bottom:2px">'+it.l+'</div><div style="font-size:10px;color:#8BA3B8;line-height:1.4">'+it.d+'</div><div class="detail" style="margin-top:10px"><div style="margin-bottom:4px"><span style="font-size:9px;font-weight:600;color:#8BA3B8">Ebenen: </span>'+it.eb.map(function(e){return tag(e[0],e[1])}).join("")+'</div><div><span style="font-size:9px;font-weight:600;color:#8BA3B8">Felder: </span>'+it.fe.map(function(f){return tag(f,it.c)}).join("")+'</div></div>';
+  d.onclick=function(){if(openL===d){d.classList.remove("act");openL=null}else{if(openL)openL.classList.remove("act");d.classList.add("act");openL=d}};
+  leistEl.appendChild(d);
+});
+
+// === PHASEN ===
+var phasenEl=document.getElementById("phasen");
+PHASES.forEach(function(p){
+  var d=document.createElement("div");d.className="phase-card";d.style.border="1.5px solid "+p.c+"30";
+  d.innerHTML='<div class="accent" style="background:'+p.c+'"></div><div class="inner"><div style="font-size:14px;font-weight:800;color:'+p.c+'">Phase '+p.n+': '+p.l+'</div><div style="font-size:11px;font-weight:600;margin-bottom:6px">'+p.s+'</div><div style="font-size:10px;color:#8BA3B8;line-height:1.5;margin-bottom:10px">'+p.d+'</div><div class="boxes"><div class="box" style="background:'+p.lc+'08;border:1px solid '+p.lc+'22"><div style="font-size:8px;font-weight:700;color:'+p.lc+';margin-bottom:3px">↗ Leistungsbereich</div><div style="font-size:10px;font-weight:600;margin-bottom:4px">'+p.leist+'</div><div>'+p.eb.map(function(e){return tag(e[0],e[1])}).join("")+'</div></div><div class="box" style="background:'+p.c+'08;border:1px solid '+p.c+'18"><div style="font-size:8px;font-weight:700;color:'+p.c+';margin-bottom:3px">Ergebnisse</div><div style="font-size:9.5px;color:#8BA3B8;line-height:1.4">'+p.erg+'</div></div></div></div>';
+  phasenEl.appendChild(d);
+});
+
+// === INSTALL HINT ===
+// Show hint only on iOS Safari when not in standalone mode
+var isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent);
+var isStandalone=window.navigator.standalone===true;
+if(isIOS&&!isStandalone){document.getElementById("installHint").style.display="block"}
+</script>
+</body>
+</html>
